@@ -714,7 +714,7 @@ export default function App() {
   const twistTyped = useTypewriter(result?.twist||"",12,resultVisible&&diagTyped===result?.desc);
 
   const startQuiz = () => {
-    setQuestions(shuffle(ALL_QUESTIONS).slice(0,10).map(q=>({...q,options:shuffle(q.options)})));
+    setQuestions(shuffle(ALL_QUESTIONS).slice(0,7).map(q=>({...q,options:shuffle(q.options)})));
     setCurrent(0);setScores([]);setReactions([]);
     setSelected(null);setReaction("");setAnimOut(false);
     setResult(null);setResultVisible(false);setCopied(false);

@@ -1,175 +1,269 @@
 import { useState, useEffect } from "react";
 
-const questions = [
+const ALL_QUESTIONS = [
   {
     id: 1, emoji: "🔔",
-    question: "Qual è la tua suoneria?",
-    comment: "Questa domanda ha già diviso le persone in due categorie. Tu sai già in quale sei.",
+    question: "La tua suoneria è...",
     options: [
-      { text: "Quella di default. Non l'ho mai cambiata. Non la cambierò.", score: 70, reaction: "Classico. Il telefono ti ha scelto tu." },
-      { text: "Una canzone. Degli anni in cui ero giovane e ottimista.", score: 55, reaction: "Nostalgia come personalità." },
-      { text: "Silenzioso sempre. Il telefono non deve fare rumore.", score: 20, reaction: "Un misantropo con buone maniere." },
-      { text: "Una notifica personalizzata che ho impostato questa settimana.", score: 15, reaction: "Benvenuto tra i viventi." },
+      { text: "Quella di default. Non l'ho mai cambiata.", score: 72, reaction: "Il telefono ti ha adottato. Non il contrario." },
+      { text: "Una canzone degli anni in cui ero ottimista.", score: 58, reaction: "La nostalgia come sistema operativo." },
+      { text: "Silenzioso sempre. Il telefono non fa rumore.", score: 18, reaction: "Un misantropo con stile." },
+      { text: "Qualcosa che ho impostato questa settimana.", score: 12, reaction: "Benvenuto tra chi ha ancora un futuro." },
     ],
   },
   {
     id: 2, emoji: "⏰",
-    question: "Quante sveglie hai impostate in questo momento?",
-    comment: "Non quelle che pensi di avere. Quelle che hai davvero. Apri l'app.",
+    question: "Quante sveglie hai impostate ADESSO?",
     options: [
-      { text: "Una. Funziona. Non ne ho bisogno di altre.", score: 18, reaction: "Una persona con un rapporto sano con la realtà." },
-      { text: "Tre. Per sicurezza. La vita è incerta.", score: 40, reaction: "Ansioso ma organizzato. Un classico." },
-      { text: "Cinque o più. Alcune disattivate da mesi che non cancello.", score: 72, reaction: "Stai covando decisioni non prese dal 2021." },
-      { text: "Nessuna, uso Alexa o Google Home.", score: 22, reaction: "Hai delegato il tuo risveglio a un'azienda multinazionale." },
+      { text: "Una. Basta. Funziona.", score: 15, reaction: "Un rapporto adulto con la realtà." },
+      { text: "Tre. Non mi fido di me stesso.", score: 42, reaction: "Ansioso ma organizzato. Il peggio dei due mondi." },
+      { text: "Cinque o più. Alcune disattivate da mesi.", score: 78, reaction: "Stai collezionando decisioni non prese dal 2020." },
+      { text: "Uso Alexa. Ho delegato il risveglio.", score: 28, reaction: "Jeff Bezos ti sveglia ogni mattina." },
     ],
   },
   {
     id: 3, emoji: "📘",
-    question: "Facebook è installato sul tuo telefono?",
-    comment: "Prenditi un momento. Pensa bene.",
+    question: "Facebook sul telefono?",
     options: [
-      { text: "Sì. Lo uso. Ogni giorno.", score: 80, reaction: "Rispetto la coerenza. Nessun giudizio. Qualcuno mente." },
-      { text: "Sì ma non lo apro. È lì per abitudine.", score: 65, reaction: "Un fossile digitale che non hai il coraggio di rimuovere." },
-      { text: "L'ho disinstallato. Anni fa. Con sollievo.", score: 22, reaction: "Hai fatto una scelta. Probabilmente anche altre buone scelte." },
-      { text: "Non l'ho mai installato.", score: 10, reaction: "Under 22 o filosofo. Non ci sono altre opzioni." },
+      { text: "Sì e lo uso ogni giorno.", score: 82, reaction: "Coerenza rara. Qualcuno mente." },
+      { text: "Sì ma non lo apro. È lì per sicurezza.", score: 68, reaction: "Un fossile digitale tenuto in vita dall'inerzia." },
+      { text: "L'ho disinstallato. Con sollievo.", score: 20, reaction: "Almeno una buona scelta nella vita." },
+      { text: "Non l'ho mai installato.", score: 8, reaction: "Under 22 o filosofo. Nessuna via di mezzo." },
     ],
   },
   {
     id: 4, emoji: "🔋",
-    question: "Descrivi il tuo rapporto con la batteria.",
-    comment: "Il modo in cui gestisci la batteria rivela come gestisci l'ansia.",
+    question: "Il tuo rapporto con la batteria?",
     options: [
-      { text: "Sempre sotto il 20%. Vivo nel rischio.", score: 45, reaction: "Un temerario. O qualcuno in denial." },
-      { text: "Ho un caricabatterie in ogni stanza, uno in borsa, uno in auto.", score: 68, reaction: "La paura del vuoto trasformata in logistica." },
-      { text: "Carico la notte. Arrivo a sera. Sistema funziona.", score: 25, reaction: "Una persona equilibrata. Rara specie." },
-      { text: "Ho sempre una powerbank. Sono pronto per tutto.", score: 30, reaction: "Prepperismo applicato allo smartphone." },
+      { text: "Sempre sotto il 20%. Vivo nel rischio.", score: 48, reaction: "Il rischio come stile di vita." },
+      { text: "Caricabatterie in ogni stanza, borsa e auto.", score: 72, reaction: "La paura del vuoto trasformata in logistica." },
+      { text: "Carico la notte, arrivo a sera. Sistema rodato.", score: 22, reaction: "Equilibrio raro. Categoria a rischio estinzione." },
+      { text: "Ho sempre la powerbank. Sono pronto.", score: 35, reaction: "Prepperismo applicato allo smartphone." },
     ],
   },
   {
     id: 5, emoji: "🎮",
     question: "Giochi installati?",
-    comment: "Non giudichiamo. Però contiamo.",
     options: [
-      { text: "Candy Crush. O Solitario. O entrambi.", score: 78, reaction: "Hai trovato la tua meditazione. Non è la peggiore." },
-      { text: "Solo Wordle o roba da 5 minuti.", score: 35, reaction: "L'illusione del controllo. Ma almeno è breve." },
-      { text: "Nessun gioco. Il telefono è uno strumento.", score: 55, reaction: "Lo dici anche a te stesso?" },
-      { text: "Giochi veri. Sono un gamer.", score: 20, reaction: "Rispetto. Almeno sei onesto con te stesso." },
+      { text: "Candy Crush o Solitario. O entrambi.", score: 80, reaction: "Hai trovato la tua meditazione laica." },
+      { text: "Solo roba da 5 minuti tipo Wordle.", score: 38, reaction: "L'illusione del controllo sul tempo libero." },
+      { text: "Nessun gioco. Il telefono è uno strumento.", score: 58, reaction: "Lo ripeti anche allo specchio?" },
+      { text: "Giochi veri. Sono un gamer.", score: 18, reaction: "Almeno sei onesto con te stesso." },
     ],
   },
   {
     id: 6, emoji: "🙏",
     question: "Usi 🙏 per dire grazie?",
-    comment: "Domanda apparentemente innocua. Non lo è.",
     options: [
-      { text: "Sì, sempre. È il modo più naturale.", score: 75, reaction: "Stai pregando o ringraziando? Il telefono non lo sa." },
-      { text: "No, le emoji le uso con intenzione.", score: 18, reaction: "Un comunicatore consapevole. Raro." },
-      { text: "Non uso emoji nelle conversazioni serie.", score: 42, reaction: "Hai una lista di conversazioni serie. Questo dice tutto." },
-      { text: "Uso solo 💀 e 😭 in senso ironico.", score: 12, reaction: "Gen Z confermato. Benvenuto." },
+      { text: "Sì, sempre. È naturalissimo.", score: 78, reaction: "Stai pregando o ringraziando? Il dubbio resta." },
+      { text: "No. Le emoji le uso con intenzione.", score: 15, reaction: "Comunicatore consapevole. Raro come i tartufi." },
+      { text: "Non uso emoji nelle conversazioni serie.", score: 45, reaction: "Hai una lista di conversazioni serie. Dice tutto." },
+      { text: "Uso solo 💀 e 😭 ironicamente.", score: 10, reaction: "Gen Z certificato." },
     ],
   },
   {
     id: 7, emoji: "📸",
-    question: "La foto più vecchia nel tuo rullino risale a...",
-    comment: "Non mentire. Il telefono sa tutto.",
+    question: "La foto più vecchia nel rullino?",
     options: [
-      { text: "Prima del 2016. È un archivio storico.", score: 80, reaction: "Il tuo telefono è un museo. Non aprire quella cartella." },
-      { text: "2017-2019. Ogni tanto faccio pulizia.", score: 48, reaction: "Una persona che procrastina in modo regolare." },
-      { text: "Ultimo anno. Sono organizzato.", score: 20, reaction: "O sei ordinato o hai cambiato telefono di recente." },
-      { text: "Tutto su cloud, non mi interessa il rullino.", score: 15, reaction: "Hai spostato il problema su Amazon." },
+      { text: "Prima del 2016. È un archivio storico.", score: 82, reaction: "Il tuo telefono è un museo. Non aprire quella cartella." },
+      { text: "2017-2019. Ogni tanto faccio pulizia.", score: 50, reaction: "Procrastinazione regolare e sistematica." },
+      { text: "Solo l'ultimo anno. Sono organizzato.", score: 18, reaction: "O sei ordinato o hai cambiato telefono di recente." },
+      { text: "Tutto su cloud. Il rullino non esiste.", score: 12, reaction: "Hai spostato il problema su Amazon. Elegante." },
     ],
   },
   {
     id: 8, emoji: "🎤",
-    question: "I tuoi messaggi vocali durano mediamente...",
-    comment: "Chi li manda lunghi sa già chi è.",
+    question: "I tuoi messaggi vocali durano?",
     options: [
-      { text: "Più di 2 minuti. Mi piace spiegarmi bene.", score: 78, reaction: "Stai registrando un podcast non richiesto." },
-      { text: "30 secondi max. Rispetto il tempo altrui.", score: 22, reaction: "Una persona con teoria della mente sviluppata." },
-      { text: "Non mando vocali. È una scelta etica.", score: 38, reaction: "Hai preso una posizione. Tienila." },
-      { text: "Non mando vocali e non li ascolto. Testo o niente.", score: 15, reaction: "Il futuro è tuo." },
+      { text: "Più di 2 minuti. Mi piace spiegarmi bene.", score: 80, reaction: "Stai registrando un podcast non richiesto." },
+      { text: "30 secondi max. Rispetto il tempo altrui.", score: 20, reaction: "Teoria della mente sviluppata. Raro." },
+      { text: "Non mando vocali. Scelta etica.", score: 40, reaction: "Hai preso una posizione. Tienila." },
+      { text: "Non mando vocali e non li ascolto.", score: 12, reaction: "Il futuro ti appartiene." },
     ],
   },
   {
     id: 9, emoji: "🔐",
     question: "Come sblocchi il telefono?",
-    comment: "Questa risposta è più privata di quanto pensi.",
     options: [
-      { text: "PIN o password. Non mi fido della biometria.", score: 65, reaction: "Diffidenza come sistema di sicurezza. Funziona." },
-      { text: "Impronta digitale.", score: 28, reaction: "Hai dato il tuo corpo a una multinazionale. Comodamente." },
-      { text: "Face ID. Vivo nel presente.", score: 18, reaction: "Il tuo viso è la chiave di casa. Pensaci." },
-      { text: "Nessun blocco. Chi vuoi che lo prenda.", score: 82, reaction: "Ottimismo cosmico applicato alla sicurezza digitale." },
+      { text: "PIN o password. Non mi fido della biometria.", score: 68, reaction: "Diffidenza come sistema di sicurezza. Funziona." },
+      { text: "Impronta digitale.", score: 25, reaction: "Hai dato il corpo a una multinazionale. Comodamente." },
+      { text: "Face ID. Vivo nel presente.", score: 15, reaction: "Il tuo viso è la chiave di casa. Pensaci." },
+      { text: "Nessun blocco. Chi vuoi che lo prenda.", score: 85, reaction: "Ottimismo cosmico applicato alla sicurezza digitale." },
     ],
   },
   {
     id: 10, emoji: "💔",
-    question: "Lo schermo del tuo telefono è...",
-    comment: "Ultima domanda. La più rivelatrice.",
+    question: "Lo schermo del tuo telefono?",
     options: [
-      { text: "Rotto. Ci convivo. Non è poi così grave.", score: 75, reaction: "Hai normalizzato il declino. Metafora disponibile." },
-      { text: "Protetto da vetro temperato dal primo giorno.", score: 52, reaction: "Ansioso preventivo. Probabilmente funziona." },
-      { text: "Perfetto. Ho cura delle mie cose.", score: 22, reaction: "O sei attento o hai comprato il telefono ieri." },
-      { text: "Ho la cover ma non il vetro. Sono ottimista.", score: 38, reaction: "Mezzo ottimismo. Il più comune." },
+      { text: "Rotto. Ci convivo. Non è così grave.", score: 78, reaction: "Hai normalizzato il declino. Metafora disponibile." },
+      { text: "Protetto da vetro temperato dal giorno uno.", score: 55, reaction: "Ansia preventiva applicata alla tecnologia." },
+      { text: "Perfetto. Ho cura delle mie cose.", score: 20, reaction: "O sei attento o hai comprato il telefono ieri." },
+      { text: "Ho la cover ma non il vetro. Sono ottimista.", score: 40, reaction: "Mezzo ottimismo. Il più diffuso in natura." },
+    ],
+  },
+  {
+    id: 11, emoji: "📱",
+    question: "Quante app hai nella schermata principale?",
+    options: [
+      { text: "Solo quelle che uso davvero. Tre o quattro.", score: 12, reaction: "Minimalismo digitale. Probabilmente hai anche una pianta." },
+      { text: "Piena ma so dove sono.", score: 45, reaction: "Caos organizzato. La condizione umana." },
+      { text: "Ho più schermate. Non ricordo quante.", score: 72, reaction: "Hai costruito un labirinto e perso la mappa." },
+      { text: "Tutto in cartelle con nomi creativi.", score: 35, reaction: "Ti sei dato un sistema. Non funziona ma ci tieni." },
+    ],
+  },
+  {
+    id: 12, emoji: "🗑️",
+    question: "Quando hai svuotato la memoria l'ultima volta?",
+    options: [
+      { text: "Ogni settimana. Sono organizzato.", score: 10, reaction: "La persona più rara che conosco." },
+      { text: "Quando mi dice che la memoria è piena.", score: 65, reaction: "Gestione reattiva della vita digitale." },
+      { text: "C'è un cestino?", score: 82, reaction: "Risposta onesta. Terrificante, ma onesta." },
+      { text: "Ho il backup automatico, non mi interessa.", score: 30, reaction: "Hai delegato anche il disordine. Strategico." },
+    ],
+  },
+  {
+    id: 13, emoji: "💬",
+    question: "Quanti messaggi non letti hai adesso?",
+    options: [
+      { text: "Zero. Non riesco a dormire altrimenti.", score: 20, reaction: "Il telefono ti controlla. In modo ordinato." },
+      { text: "Qualche decina. Li leggo ma non rispondo.", score: 40, reaction: "Passivo-aggressivo in modo involontario." },
+      { text: "Centinaia. Ho smesso di contare.", score: 75, reaction: "Hai fatto pace con il caos. Rispetto." },
+      { text: "Non lo so. Non guardo quel numero.", score: 55, reaction: "Negazione consapevole. Una strategia." },
+    ],
+  },
+  {
+    id: 14, emoji: "🌙",
+    question: "Il telefono di notte?",
+    options: [
+      { text: "Sul comodino, schermo verso il basso.", score: 45, reaction: "Compromesso tra dipendenza e senso di colpa." },
+      { text: "In un'altra stanza. Ho dei limiti.", score: 15, reaction: "Forza di volontà rara. O notti agitate." },
+      { text: "Sul comodino, carico, notifiche attive.", score: 78, reaction: "Il telefono è il tuo coinquilino preferito." },
+      { text: "In modalità aereo. Sono serio.", score: 10, reaction: "O dormi benissimo o menti benissimo." },
+    ],
+  },
+  {
+    id: 15, emoji: "📞",
+    question: "Quando squilla il telefono tu...",
+    options: [
+      { text: "Rispondo sempre. È un telefono.", score: 35, reaction: "Un ottimista. O chi non ha abbastanza nemici." },
+      { text: "Guardo chi è e decido.", score: 25, reaction: "Selezione naturale delle relazioni umane." },
+      { text: "Non rispondo mai. Manda un messaggio.", score: 60, reaction: "Hai stabilito dei confini chiari." },
+      { text: "Va in vivavoce perché non trovo il telefono.", score: 72, reaction: "Il caos come ecosistema naturale." },
+    ],
+  },
+  {
+    id: 16, emoji: "🎵",
+    question: "Come ascolti musica?",
+    options: [
+      { text: "Spotify o simili. Come tutti.", score: 30, reaction: "Nella media. Niente di cui vergognarsi." },
+      { text: "YouTube con la pubblicità. Non pago.", score: 58, reaction: "Economia domestica applicata alla cultura." },
+      { text: "Ho ancora i file mp3 sul telefono.", score: 82, reaction: "iPod nella mente, smartphone nella mano." },
+      { text: "Non ascolto musica dal telefono.", score: 20, reaction: "O hai degli standard o hai perso le cuffie." },
+    ],
+  },
+  {
+    id: 17, emoji: "🗺️",
+    question: "Usi Maps o sai orientarti?",
+    options: [
+      { text: "Maps sempre. Anche per posti che conosco.", score: 70, reaction: "Hai esternalizzato l'orientamento a Google." },
+      { text: "Solo per posti nuovi.", score: 22, reaction: "Equilibrio raro tra digitale e analogico." },
+      { text: "Maps ma poi mi perdo lo stesso.", score: 55, reaction: "Tecnologia come placebo." },
+      { text: "Mi oriento da solo. Le mappe sono per i deboli.", score: 35, reaction: "Romantico. O vivi in un posto con due strade." },
+    ],
+  },
+  {
+    id: 18, emoji: "🔄",
+    question: "Quando aggiorni le app?",
+    options: [
+      { text: "Aggiornamento automatico. Non ci penso.", score: 18, reaction: "Hai delegato anche le decisioni tecnologiche." },
+      { text: "Quando la notifica mi rompe abbastanza.", score: 60, reaction: "Resistenza passiva alla tecnologia. Nobile." },
+      { text: "Non aggiorno mai. Funziona così.", score: 80, reaction: "Tuo nonno digitale sarebbe fiero." },
+      { text: "Manualmente ogni settimana.", score: 15, reaction: "Hai troppo tempo libero o troppo poco." },
+    ],
+  },
+  {
+    id: 19, emoji: "🤳",
+    question: "Quante foto hai fatto questa settimana?",
+    options: [
+      { text: "Zero. Non era necessario immortalare niente.", score: 15, reaction: "O hai vissuto pienamente o non è successo niente." },
+      { text: "Qualche foto. Solo le cose che valevano.", score: 28, reaction: "Selettività fotografica. Una virtù rara." },
+      { text: "Decine. Compreso il pranzo di ieri.", score: 65, reaction: "Stai documentando la vita per qualcuno che non la vedrà." },
+      { text: "Non lo so, non conto.", score: 80, reaction: "Il rullino cresce da solo. Come un fungo." },
+    ],
+  },
+  {
+    id: 20, emoji: "🔕",
+    question: "Il Do Not Disturb lo usi?",
+    options: [
+      { text: "Sempre attivo. Il mondo può aspettare.", score: 18, reaction: "Confini sani. Probabilmente hai un buon terapeuta." },
+      { text: "Solo di notte.", score: 32, reaction: "Un minimo di rispetto per il sonno." },
+      { text: "Non l'ho mai attivato.", score: 75, reaction: "Disponibile 24 ore. Condizione moderna." },
+      { text: "Non so neanche dove si trova.", score: 60, reaction: "Ignoranza per pigrizia o per scelta. Stesso risultato." },
     ],
   },
 ];
 
-const results = [
+const RESULTS = [
   {
-    min: 0, max: 25, age: 17,
-    title: "Clinicamente Giovane",
-    subtitle: "Il tuo telefono è in perfetta salute mentale.",
-    diagnosis: "Nessuna patologia rilevata. Uso consapevole della tecnologia, nessuna app zombie, nessuna sveglia fantasma. O hai meno di vent'anni o hai fatto un percorso di crescita personale sul tuo telefono. In entrambi i casi: fastidioso.",
-    prognosis: "Prognosi eccellente. Continua così. Gli altri ti odieranno.",
-    accent: "#00aa55",
-    light: "#e6f9ef",
+    min: 0, max: 22, age: 19,
+    title: "Disturbante",
+    subtitle: "Il tuo telefono è più sano di te.",
+    desc: "Nessuna patologia rilevata. Zero sveglie inutili, zero app zombie. O hai meno di vent'anni o hai fatto un percorso spirituale sul tuo smartphone. In entrambi i casi sei fastidioso da frequentare.",
+    twist: "Probabilmente hai anche una routine mattutina.",
+    accent: "#00e676", bg: "#0a1a0e", card: "#0f2415",
   },
   {
-    min: 26, max: 38, age: 26,
-    title: "Lievemente Compromesso",
-    subtitle: "Qualche segnale preoccupante, ma nulla di irreversibile.",
-    diagnosis: "Il paziente mostra una discreta consapevolezza digitale ma conserva alcune abitudini vestigiali probabilmente ereditate da un sé precedente. La situazione è gestibile con moderata volontà.",
-    prognosis: "Prognosi buona. Con qualche sforzo potresti diventare una persona che altri guardano con rispetto misto a invidia.",
-    accent: "#0077cc",
-    light: "#e6f0fa",
+    min: 23, max: 38, age: 28,
+    title: "Quasi Salvo",
+    subtitle: "Con un po' di impegno potresti farcela.",
+    desc: "Segni di consapevolezza digitale ma con alcune abitudini vestigiali di un sé precedente. La situazione è gestibile. Con sforzo moderato e una buona connessione wi-fi.",
+    twist: "Hai ancora speranza. Non sprecarla.",
+    accent: "#40c4ff", bg: "#08131a", card: "#0d1e2b",
   },
   {
-    min: 39, max: 52, age: 38,
-    title: "Caso Classico",
-    subtitle: "Niente di cui stupirsi. Niente di cui vantarsi.",
-    diagnosis: "Il paziente presenta i sintomi tipici della generazione di transizione: abbastanza giovane da capire la tecnologia, abbastanza vecchio da ignorarla selettivamente. Facebook ancora installato 'per sicurezza'. Tre sveglie. Vocali di 90 secondi. Testo della sentenza: medio.",
-    prognosis: "Prognosi nella media. Come il paziente.",
-    accent: "#cc8800",
-    light: "#fff8e6",
+    min: 39, max: 54, age: 41,
+    title: "Medio in Tutto",
+    subtitle: "Né troppo giovane né troppo vecchio. Semplicemente medio.",
+    desc: "Il telefono rispecchia la vita: funziona, sopravvive, non brilla. Facebook installato per sicurezza. Tre sveglie. Vocali di novanta secondi. Sentenza: adeguato.",
+    twist: "La media è anche una scelta di vita.",
+    accent: "#ffd740", bg: "#1a1400", card: "#242000",
   },
   {
-    min: 53, max: 65, age: 51,
-    title: "Avanzato ma Stabile",
-    subtitle: "Il declino è iniziato ma procede ordinatamente.",
-    diagnosis: "Il paziente ha sviluppato un ecosistema digitale che funziona nonostante tutto. Suoneria di default dal 2018, rullino come archivio nazionale, caricabatterie in ogni ambiente domestico. Non c'è urgenza ma sarebbe auspicabile una revisione.",
-    prognosis: "Prognosi discreta. Il telefono sopravviverà al paziente, ma solo per ragioni di inerzia.",
-    accent: "#cc5500",
-    light: "#fff0e6",
+    min: 55, max: 68, age: 52,
+    title: "Avanzato ma Funzionante",
+    subtitle: "Il declino è iniziato. Procede con dignità.",
+    desc: "L'ecosistema digitale funziona nonostante tutto. Non si sa come. Suoneria di default dal 2019, rullino come archivio nazionale, caricabatterie in ogni stanza. Non c'è urgenza. Ma sarebbe auspicabile una revisione.",
+    twist: "Il telefono sopravviverà al paziente. Per inerzia.",
+    accent: "#ff9100", bg: "#1a0d00", card: "#241400",
   },
   {
-    min: 66, max: 100, age: 64,
+    min: 69, max: 100, age: 67,
     title: "Reperto Storico",
-    subtitle: "Il telefono andrebbe esposto in un museo.",
-    diagnosis: "Il paziente ha raggiunto uno stadio di stabilità digitale che va oltre la negligenza: è diventato uno stile di vita. Foto dal 2013, Candy Crush a livello tre cifre, PIN uguale da sette anni, schermo rotto 'funziona lo stesso'. Non è un problema. È un'identità.",
-    prognosis: "Prognosi: irrilevante. Il paziente non cambierà. E in fondo, perché dovrebbe.",
-    accent: "#cc1133",
-    light: "#fce6ea",
+    subtitle: "Andrebbe esposto in un museo.",
+    desc: "Ha raggiunto uno stadio di stabilità digitale che va oltre la negligenza: è diventato un'identità. Foto dal 2012, Candy Crush a livello quattro cifre, PIN uguale da sempre, schermo rotto da mesi.",
+    twist: "Non cambierà. E in fondo, perché dovrebbe.",
+    accent: "#ff5252", bg: "#1a0808", card: "#240f0f",
   },
 ];
 
 const getResult = (scores) => {
   const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-  return results.find((r) => avg >= r.min && avg <= r.max) || results[2];
+  return RESULTS.find((r) => avg >= r.min && avg <= r.max) || RESULTS[2];
 };
 
-function useTypewriter(text, speed = 16, active = false) {
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function useTypewriter(text, speed = 12, active = false) {
   const [displayed, setDisplayed] = useState("");
   useEffect(() => {
-    if (!active) return;
+    if (!active) { setDisplayed(""); return; }
     setDisplayed("");
     let i = 0;
     const interval = setInterval(() => {
@@ -183,6 +277,7 @@ function useTypewriter(text, speed = 16, active = false) {
 
 export default function App() {
   const [screen, setScreen] = useState("intro");
+  const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
   const [scores, setScores] = useState([]);
   const [reactions, setReactions] = useState([]);
@@ -193,9 +288,17 @@ export default function App() {
   const [resultVisible, setResultVisible] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const progress = (current / questions.length) * 100;
-  const diagnosisTyped = useTypewriter(result?.diagnosis || "", 14, resultVisible);
-  const prognosisTyped = useTypewriter(result?.prognosis || "", 14, resultVisible && diagnosisTyped === result?.diagnosis);
+  const progress = questions.length > 0 ? (current / questions.length) * 100 : 0;
+  const diagTyped = useTypewriter(result?.desc || "", 12, resultVisible);
+  const twistTyped = useTypewriter(result?.twist || "", 12, resultVisible && diagTyped === result?.desc);
+
+  const startQuiz = () => {
+    setQuestions(shuffle(ALL_QUESTIONS).slice(0, 10).map(q => ({...q, options: shuffle(q.options)})));
+    setCurrent(0); setScores([]); setReactions([]);
+    setSelected(null); setReaction(""); setAnimOut(false);
+    setResult(null); setResultVisible(false); setCopied(false);
+    setScreen("quiz");
+  };
 
   const handleAnswer = (opt) => {
     if (selected !== null) return;
@@ -204,136 +307,196 @@ export default function App() {
     setTimeout(() => {
       setAnimOut(true);
       setTimeout(() => {
-        const newScores = [...scores, opt.score];
-        const newReactions = [...reactions, opt.reaction];
-        setScores(newScores);
-        setReactions(newReactions);
+        const ns = [...scores, opt.score];
+        const nr = [...reactions, opt.reaction];
+        setScores(ns); setReactions(nr);
         if (current + 1 >= questions.length) {
-          const r = getResult(newScores);
-          setResult(r);
-          setScreen("result");
+          const r = getResult(ns);
+          setResult(r); setScreen("result");
           setTimeout(() => setResultVisible(true), 300);
         } else {
           setCurrent(current + 1);
-          setSelected(null);
-          setReaction("");
-          setAnimOut(false);
+          setSelected(null); setReaction(""); setAnimOut(false);
         }
       }, 350);
     }, 900);
   };
 
-  const restart = () => {
-    setCurrent(0); setScores([]); setReactions([]);
-    setSelected(null); setReaction(""); setAnimOut(false);
-    setResult(null); setResultVisible(false); setCopied(false);
-    setScreen("intro");
-  };
+  const css = `
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{-webkit-text-size-adjust:100%}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .f1{animation:fadeUp .5s .0s both}
+    .f2{animation:fadeUp .5s .1s both}
+    .f3{animation:fadeUp .5s .2s both}
+    .f4{animation:fadeUp .5s .3s both}
+    .f5{animation:fadeUp .5s .4s both}
+    .card-in{animation:fadeUp .3s both}
+    .react-in{animation:slideIn .3s both}
+    .r1{animation:fadeUp .4s .05s both}
+    .r2{animation:fadeUp .4s .15s both}
+    .r3{animation:fadeUp .4s .25s both}
+    .r4{animation:fadeUp .4s .35s both}
+    .r5{animation:fadeUp .4s .45s both}
+    .cursor{display:inline-block;width:2px;height:.85em;background:currentColor;margin-left:2px;animation:blink .7s infinite;vertical-align:text-bottom}
+    .opt-btn{transition:border-color .15s,background .15s;cursor:pointer}
+    .opt-btn:active{opacity:.8}
+    button{cursor:pointer}
+    button:active{opacity:.8}
+  `;
 
-  const copyShare = () => {
-    navigator.clipboard?.writeText(`🩺 DIAGNOSI TELEFONICA\n\nEtà mentale: ${result.age} anni\n"${result.title}"\n\n${result.subtitle}\n\nFai il test → revelo.cool`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const root = {
+    minHeight: "100vh",
+    fontFamily: "'IBM Plex Mono', monospace",
+    display: "flex", flexDirection: "column",
+    alignItems: "center", padding: "24px 16px 60px",
   };
 
   // ── INTRO ──
   if (screen === "intro") return (
-    <div style={s.root}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-        .f1{animation:fadeUp 0.5s 0s both}
-        .f2{animation:fadeUp 0.5s 0.12s both}
-        .f3{animation:fadeUp 0.5s 0.24s both}
-        .f4{animation:fadeUp 0.5s 0.36s both}
-        .f5{animation:fadeUp 0.5s 0.48s both}
-        button:hover{opacity:0.8;transition:opacity 0.15s}
-      `}</style>
-      <div style={s.introWrap}>
-        <div className="f1" style={s.pill}>CLINICA DIGITALE · REPARTO DIAGNOSI</div>
-        <h1 className="f2" style={s.h1}>
-          Quanti anni ha<br />
-          <em style={s.em}>il tuo telefono?</em>
+    <div style={{...root, background: "#0e0e0e", color: "#e0e0e0"}}>
+      <style>{css}</style>
+      <div style={{maxWidth: 440, width: "100%", textAlign: "center", paddingTop: "8vh"}}>
+        <div className="f1" style={{
+          display: "inline-block", background: "rgba(255,255,255,.07)",
+          border: "1px solid rgba(255,255,255,.12)", borderRadius: 100,
+          padding: "6px 16px", fontSize: 11, letterSpacing: 2,
+          color: "#777", marginBottom: 32, textTransform: "uppercase",
+        }}>📱 Clinica Digitale</div>
+
+        <h1 className="f2" style={{
+          fontFamily: "'Syne', sans-serif",
+          fontSize: "clamp(40px, 11vw, 64px)", fontWeight: 900,
+          lineHeight: 1.05, color: "#fff", marginBottom: 20, letterSpacing: -1,
+        }}>
+          Quanti anni ha<br/>
+          <span style={{color: "#ffd740"}}>il tuo telefono?</span>
         </h1>
-        <p className="f3" style={s.lead}>
-          Non l'anno di produzione.<br />
-          L'<strong>età mentale</strong>. La diagnosi che nessuno ti ha mai fatto.
+
+        <p className="f3" style={{fontSize: 16, color: "#aaa", lineHeight: 1.8, marginBottom: 16}}>
+          Non l'anno di produzione.<br/>
+          L'<strong style={{color: "#fff"}}>età mentale</strong>.<br/>
+          Quella che non vuoi sapere.
         </p>
-        <div className="f4" style={s.meta}>
-          <span>10 domande</span>
-          <span style={s.sep}>·</span>
-          <span>referto immediato</span>
-          <span style={s.sep}>·</span>
-          <span>nessun appello possibile</span>
+
+        <div className="f4" style={{fontSize: 12, color: "#444", letterSpacing: 1, marginBottom: 40}}>
+          10 domande casuali · risultato immediato
         </div>
-        <button className="f5" style={s.startBtn} onClick={() => setScreen("quiz")}>
+
+        <button className="f5" onClick={startQuiz} style={{
+          background: "#fff", color: "#000", border: "none",
+          borderRadius: 8, padding: "18px 0", fontSize: 15,
+          fontWeight: 700, letterSpacing: 1.5,
+          fontFamily: "'IBM Plex Mono', monospace",
+          width: "100%", textTransform: "uppercase",
+          marginBottom: 16, display: "block",
+        }}>
           Inizia la visita →
         </button>
-        <p className="f5" style={s.fine}>Nessun dato raccolto. Il referto è solo per la tua coscienza.</p>
+
+        <p className="f5" style={{fontSize: 12, color: "#333"}}>
+          Nessun dato raccolto. Solo verità scomode.
+        </p>
       </div>
     </div>
   );
 
   // ── QUIZ ──
-  if (screen === "quiz") {
+  if (screen === "quiz" && questions.length > 0) {
     const q = questions[current];
     return (
-      <div style={s.root}>
-        <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&display=swap');
-          * { box-sizing: border-box; margin: 0; padding: 0; }
-          @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-          @keyframes reactionIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-          .card-in{animation:fadeUp 0.3s both}
-          .react-in{animation:reactionIn 0.3s both}
-          .opt{transition:all 0.15s}
-          .opt:hover{transform:translateX(3px)}
-          button:hover{opacity:0.85}
-        `}</style>
-        <div style={s.quizHeader}>
-          <span style={s.headerLabel}>CLINICA DIGITALE</span>
-          <span style={s.counter}>{current + 1}<span style={{color:"#bbb"}}>/{questions.length}</span></span>
+      <div style={{...root, background: "#0e0e0e", color: "#e0e0e0"}}>
+        <style>{css}</style>
+
+        <div style={{
+          width: "100%", maxWidth: 500,
+          display: "flex", justifyContent: "space-between",
+          alignItems: "center", marginBottom: 12,
+        }}>
+          <span style={{fontSize: 11, letterSpacing: 3, color: "#444", textTransform: "uppercase"}}>Clinica Digitale</span>
+          <span style={{fontSize: 15, color: "#666"}}>
+            {current + 1}<span style={{color: "#333"}}>/{questions.length}</span>
+          </span>
         </div>
-        <div style={s.progressTrack}>
-          <div style={{...s.progressFill, width:`${progress}%`}} />
+
+        <div style={{
+          width: "100%", maxWidth: 500, height: 3,
+          background: "rgba(255,255,255,.07)", marginBottom: 24,
+          borderRadius: 10, overflow: "hidden",
+        }}>
+          <div style={{
+            height: "100%", background: "#ffd740",
+            width: `${progress}%`, borderRadius: 10,
+            transition: "width .4s ease",
+          }} />
         </div>
+
         <div
           key={current}
           className="card-in"
           style={{
-            ...s.card,
+            width: "100%", maxWidth: 500,
+            background: "#181818", border: "1px solid #2a2a2a",
+            borderRadius: 16, padding: "24px 20px",
             opacity: animOut ? 0 : 1,
             transform: animOut ? "translateY(-8px)" : "translateY(0)",
-            transition: "opacity 0.3s, transform 0.3s",
+            transition: "opacity .3s, transform .3s",
           }}
         >
-          <div style={s.emoji}>{q.emoji}</div>
-          <h2 style={s.question}>{q.question}</h2>
-          <p style={s.comment}>{q.comment}</p>
-          <div style={s.optsList}>
+          <div style={{fontSize: 32, textAlign: "center", marginBottom: 16}}>{q.emoji}</div>
+          <h2 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: "clamp(19px, 5vw, 23px)", fontWeight: 800,
+            textAlign: "center", color: "#fff",
+            marginBottom: 24, lineHeight: 1.3,
+          }}>{q.question}</h2>
+
+          <div style={{display: "flex", flexDirection: "column", gap: 10}}>
             {q.options.map((opt, i) => (
               <button
                 key={i}
-                className="opt"
+                className="opt-btn"
                 style={{
-                  ...s.optBtn,
-                  ...(selected === opt.score ? s.optActive : {}),
+                  background: selected === opt.score ? "#ffd740" : "rgba(255,255,255,.05)",
+                  border: `1.5px solid ${selected === opt.score ? "#ffd740" : "rgba(255,255,255,.1)"}`,
+                  borderRadius: 10, padding: "14px 16px",
+                  color: selected === opt.score ? "#000" : "#ccc",
+                  fontSize: 14, textAlign: "left",
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  display: "flex", gap: 12,
+                  alignItems: "flex-start", lineHeight: 1.5,
                   pointerEvents: selected !== null ? "none" : "auto",
                 }}
                 onClick={() => handleAnswer(opt)}
               >
-                <span style={{...s.optLetter, ...(selected === opt.score ? {color:"#000", fontWeight:700} : {})}}>
+                <span style={{
+                  color: selected === opt.score ? "#000" : "#555",
+                  minWidth: 18, fontSize: 12, paddingTop: 1, fontWeight: 700,
+                }}>
                   {["A","B","C","D"][i]}
                 </span>
-                <span style={s.optText}>{opt.text}</span>
+                <span style={{flex: 1}}>{opt.text}</span>
               </button>
             ))}
           </div>
+
           {reaction && (
-            <div className="react-in" style={s.reactionBox}>
-              <span style={s.reactionLabel}>DIAGNOSI PARZIALE</span>
-              <p style={s.reactionText}>"{reaction}"</p>
+            <div className="react-in" style={{
+              marginTop: 16, padding: "14px 16px",
+              background: "rgba(255,215,64,.07)",
+              border: "1px solid rgba(255,215,64,.2)",
+              borderRadius: 8,
+            }}>
+              <span style={{
+                fontSize: 10, letterSpacing: 3, color: "#ffd740",
+                marginBottom: 6, display: "block", textTransform: "uppercase",
+              }}>Verdetto parziale</span>
+              <p style={{fontSize: 14, color: "#ddd", fontStyle: "italic", lineHeight: 1.6}}>
+                "{reaction}"
+              </p>
             </div>
           )}
         </div>
@@ -343,71 +506,128 @@ export default function App() {
 
   // ── RESULT ──
   if (screen === "result" && result) return (
-    <div style={{...s.root, background: result.light}}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-        .r1{animation:fadeUp 0.4s 0.05s both}
-        .r2{animation:fadeUp 0.4s 0.15s both}
-        .r3{animation:fadeUp 0.4s 0.25s both}
-        .r4{animation:fadeUp 0.4s 0.35s both}
-        .r5{animation:fadeUp 0.4s 0.45s both}
-        .cursor{display:inline-block;width:2px;height:0.9em;background:currentColor;margin-left:2px;animation:blink 0.7s infinite;vertical-align:text-bottom}
-        button:hover{opacity:0.8}
-      `}</style>
-      <div style={s.resultWrap}>
-        <div className="r1" style={s.resultTop}>
-          <span style={s.resultClinic}>CLINICA DIGITALE</span>
-          <span style={{...s.stamp, color: result.accent, borderColor: result.accent}}>REFERTO UFFICIALE</span>
+    <div style={{...root, background: result.bg, color: "#e0e0e0"}}>
+      <style>{css}</style>
+      <div style={{maxWidth: 500, width: "100%", paddingTop: 8}}>
+
+        <div className="r1" style={{
+          display: "flex", justifyContent: "space-between",
+          alignItems: "center", marginBottom: 28,
+        }}>
+          <span style={{fontSize: 10, letterSpacing: 3, color: "#555", textTransform: "uppercase"}}>
+            Referto Ufficiale
+          </span>
+          <span style={{
+            fontSize: 10, letterSpacing: 2,
+            border: `1px solid ${result.accent}`,
+            color: result.accent, padding: "3px 10px",
+            borderRadius: 3, textTransform: "uppercase",
+          }}>Clinica Digitale</span>
         </div>
 
-        <div className="r2" style={s.ageRow}>
-          <div style={{...s.bigNum, color: result.accent}}>{result.age}</div>
-          <div style={s.ageInfo}>
-            <div style={{...s.ageTag, color: result.accent}}>ANNI MENTALI</div>
-            <div style={{...s.ageTitle, color: result.accent}}>{result.title}</div>
-            <div style={s.ageSub}>{result.subtitle}</div>
+        <div className="r2" style={{display: "flex", alignItems: "center", gap: 16, marginBottom: 8}}>
+          <div style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: "clamp(76px, 20vw, 100px)", fontWeight: 900,
+            lineHeight: 1, letterSpacing: -4,
+            color: result.accent, minWidth: "fit-content",
+          }}>{result.age}</div>
+          <div>
+            <div style={{fontSize: 10, letterSpacing: 3, color: result.accent, textTransform: "uppercase", marginBottom: 6}}>
+              Anni Mentali
+            </div>
+            <div style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: "clamp(19px, 5vw, 24px)", fontWeight: 800,
+              color: "#fff", lineHeight: 1.2, marginBottom: 6,
+            }}>{result.title}</div>
+            <div style={{fontSize: 13, color: result.accent + "cc", lineHeight: 1.4}}>
+              {result.subtitle}
+            </div>
           </div>
         </div>
 
-        <div className="r3" style={{...s.divider, borderColor: result.accent + "44"}} />
+        <div className="r3" style={{
+          height: 1, background: result.accent + "33",
+          margin: "20px 0",
+        }} />
 
-        <div className="r3" style={{...s.diagBox, borderColor: result.accent + "33", background: "#fff"}}>
-          <span style={{...s.diagLabel, color: result.accent}}>DIAGNOSI</span>
-          <p style={s.diagText}>
-            {diagnosisTyped}
-            {diagnosisTyped !== result.diagnosis && <span className="cursor" style={{color: result.accent}} />}
+        <div className="r3" style={{
+          background: result.card,
+          border: `1px solid ${result.accent}22`,
+          borderRadius: 12, padding: "18px 16px", marginBottom: 20,
+        }}>
+          <span style={{
+            fontSize: 10, letterSpacing: 3, color: result.accent,
+            textTransform: "uppercase", marginBottom: 10, display: "block",
+          }}>Diagnosi</span>
+          <p style={{fontSize: 14, color: "#ccc", lineHeight: 1.85}}>
+            {diagTyped}
+            {diagTyped !== result.desc && <span className="cursor" style={{color: result.accent}} />}
           </p>
-          <span style={{...s.diagLabel, color: result.accent, marginTop: 16, display:"block"}}>PROGNOSI</span>
-          <p style={s.diagText}>
-            {prognosisTyped}
-            {prognosisTyped.length > 0 && prognosisTyped !== result.prognosis && <span className="cursor" style={{color: result.accent}} />}
-          </p>
+          {(twistTyped.length > 0 || diagTyped === result.desc) && (
+            <>
+              <span style={{
+                fontSize: 10, letterSpacing: 3, color: result.accent,
+                textTransform: "uppercase", marginBottom: 8,
+                marginTop: 16, display: "block",
+              }}>Sentenza Finale</span>
+              <p style={{fontSize: 14, color: result.accent + "ee", fontStyle: "italic", lineHeight: 1.7}}>
+                {twistTyped}
+                {twistTyped.length > 0 && twistTyped !== result.twist && <span className="cursor" style={{color: result.accent}} />}
+              </p>
+            </>
+          )}
         </div>
 
-        <div className="r4" style={s.annotWrap}>
-          <div style={s.annotLabel}>ANNOTAZIONI PER DOMANDA</div>
+        <div className="r4" style={{marginBottom: 24}}>
+          <div style={{
+            fontSize: 10, letterSpacing: 3, color: "#444",
+            textTransform: "uppercase", marginBottom: 12,
+          }}>Annotazioni</div>
           {reactions.map((r, i) => (
-            <div key={i} style={s.annotRow}>
-              <span style={{...s.annotNum, color: result.accent}}>{String(i+1).padStart(2,"0")}</span>
-              <span style={s.annotText}>"{r}"</span>
+            <div key={i} style={{
+              display: "flex", gap: 12, marginBottom: 10, alignItems: "flex-start",
+            }}>
+              <span style={{fontSize: 11, minWidth: 22, paddingTop: 2, color: result.accent}}>
+                {String(i+1).padStart(2,"0")}
+              </span>
+              <span style={{fontSize: 13, color: "#888", fontStyle: "italic", lineHeight: 1.55}}>
+                "{r}"
+              </span>
             </div>
           ))}
         </div>
 
-        <div className="r5" style={s.actions}>
-          <button style={{...s.shareBtn, background: result.accent}} onClick={copyShare}>
-            {copied ? "✓ Copiato!" : "📋 Copia referto"}
+        <div className="r5" style={{display: "flex", flexDirection: "column", gap: 12, marginBottom: 20}}>
+          <button
+            onClick={copyShare}
+            style={{
+              background: result.accent, color: result.bg,
+              border: "none", borderRadius: 8, padding: "16px",
+              fontSize: 14, fontWeight: 700,
+              fontFamily: "'IBM Plex Mono', monospace",
+              letterSpacing: 1, textTransform: "uppercase",
+            }}
+          >
+            {copied ? "✓ Copiato!" : "Copia e condividi"}
           </button>
-          <button style={{...s.secondBtn, color: result.accent, borderColor: result.accent + "66"}} onClick={restart}>
-            Richiedi seconda opinione
+          <button
+            onClick={startQuiz}
+            style={{
+              background: "transparent",
+              border: `1.5px solid ${result.accent}55`,
+              borderRadius: 8, padding: "15px",
+              fontSize: 13, color: result.accent,
+              fontFamily: "'IBM Plex Mono', monospace",
+            }}
+          >
+            Rifai con domande diverse
           </button>
         </div>
 
-        <p className="r5" style={s.footer}>
-          Clinica Digitale · Diagnosi non vincolante · Il medico non risponde dei danni emotivi
+        <p className="r5" style={{fontSize: 11, color: "#333", textAlign: "center"}}>
+          Clinica Digitale · revelo.cool
         </p>
       </div>
     </div>
@@ -415,153 +635,3 @@ export default function App() {
 
   return null;
 }
-
-const s = {
-  root: {
-    minHeight: "100vh",
-    background: "#f9f7f4",
-    color: "#111",
-    fontFamily: "'DM Mono', monospace",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "32px 20px 60px",
-  },
-  // Intro
-  introWrap: { maxWidth: 460, width: "100%", textAlign: "center", paddingTop: "8vh" },
-  pill: {
-    display: "inline-block",
-    background: "#efefef",
-    border: "1px solid #ddd",
-    borderRadius: 100,
-    padding: "5px 14px",
-    fontSize: 10,
-    letterSpacing: 2,
-    color: "#888",
-    marginBottom: 28,
-    textTransform: "uppercase",
-  },
-  h1: {
-    fontFamily: "'Playfair Display', serif",
-    fontSize: "clamp(38px, 9vw, 64px)",
-    fontWeight: 900,
-    lineHeight: 1.08,
-    color: "#111",
-    marginBottom: 18,
-    letterSpacing: -1,
-  },
-  em: { fontStyle: "italic", color: "#cc8800" },
-  lead: { fontSize: 16, color: "#555", lineHeight: 1.8, marginBottom: 20 },
-  meta: { fontSize: 11, color: "#aaa", letterSpacing: 1, marginBottom: 36, display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" },
-  sep: { color: "#ccc" },
-  startBtn: {
-    background: "#111", color: "#fff", border: "none",
-    borderRadius: 6, padding: "16px 0", fontSize: 13,
-    fontWeight: 700, cursor: "pointer", letterSpacing: 1.5,
-    fontFamily: "'DM Mono', monospace", width: "100%",
-    textTransform: "uppercase", marginBottom: 14, display: "block",
-  },
-  fine: { fontSize: 11, color: "#bbb" },
-
-  // Quiz
-  quizHeader: {
-    width: "100%", maxWidth: 520,
-    display: "flex", justifyContent: "space-between", alignItems: "center",
-    marginBottom: 10,
-  },
-  headerLabel: { fontSize: 9, letterSpacing: 3, color: "#bbb", textTransform: "uppercase" },
-  counter: { fontSize: 13, color: "#999" },
-  progressTrack: {
-    width: "100%", maxWidth: 520, height: 2,
-    background: "#e8e8e8", marginBottom: 24, borderRadius: 10, overflow: "hidden",
-  },
-  progressFill: { height: "100%", background: "#111", borderRadius: 10, transition: "width 0.4s ease" },
-  card: {
-    width: "100%", maxWidth: 520,
-    background: "#fff",
-    border: "1px solid #e8e8e8",
-    borderRadius: 12,
-    padding: "28px 24px",
-    boxShadow: "0 2px 20px rgba(0,0,0,0.06)",
-  },
-  emoji: { fontSize: 30, textAlign: "center", display: "block", marginBottom: 14 },
-  question: {
-    fontFamily: "'Playfair Display', serif",
-    fontSize: "clamp(18px, 4vw, 22px)",
-    fontWeight: 700, textAlign: "center",
-    color: "#111", marginBottom: 8, lineHeight: 1.3,
-  },
-  comment: { fontSize: 12, color: "#aaa", textAlign: "center", marginBottom: 22, lineHeight: 1.6, fontStyle: "italic" },
-  optsList: { display: "flex", flexDirection: "column", gap: 8 },
-  optBtn: {
-    background: "#f9f7f4",
-    border: "1.5px solid #e8e8e8",
-    borderRadius: 8, padding: "12px 14px",
-    color: "#333", fontSize: 13, textAlign: "left",
-    cursor: "pointer", fontFamily: "'DM Mono', monospace",
-    display: "flex", gap: 12, alignItems: "flex-start", lineHeight: 1.5,
-  },
-  optActive: {
-    background: "#111",
-    border: "1.5px solid #111",
-    color: "#fff",
-  },
-  optLetter: { color: "#bbb", minWidth: 16, fontSize: 11, paddingTop: 1 },
-  optText: { flex: 1 },
-  reactionBox: {
-    marginTop: 18, padding: "12px 16px",
-    background: "#fffbf0",
-    border: "1px solid #f0d080",
-    borderRadius: 6,
-  },
-  reactionLabel: { fontSize: 9, letterSpacing: 3, color: "#cc8800", marginBottom: 5, display: "block", textTransform: "uppercase" },
-  reactionText: { fontSize: 13, color: "#555", fontStyle: "italic", lineHeight: 1.5 },
-
-  // Result
-  resultWrap: { maxWidth: 520, width: "100%", paddingTop: 16 },
-  resultTop: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 },
-  resultClinic: { fontSize: 9, letterSpacing: 4, color: "#aaa", textTransform: "uppercase" },
-  stamp: {
-    fontSize: 9, letterSpacing: 2, border: "1px solid",
-    padding: "3px 8px", borderRadius: 2, textTransform: "uppercase",
-  },
-  ageRow: { display: "flex", alignItems: "center", gap: 20, marginBottom: 4 },
-  bigNum: {
-    fontFamily: "'Playfair Display', serif",
-    fontSize: "clamp(72px, 18vw, 100px)",
-    fontWeight: 900, lineHeight: 1, letterSpacing: -4, minWidth: "fit-content",
-  },
-  ageInfo: { flex: 1 },
-  ageTag: { fontSize: 9, letterSpacing: 3, textTransform: "uppercase", marginBottom: 5 },
-  ageTitle: {
-    fontFamily: "'Playfair Display', serif",
-    fontSize: "clamp(16px, 4vw, 22px)", fontWeight: 700, lineHeight: 1.2, marginBottom: 5,
-  },
-  ageSub: { fontSize: 12, color: "#888", lineHeight: 1.4 },
-  divider: { border: "none", borderTop: "1px solid", margin: "20px 0" },
-  diagBox: {
-    border: "1px solid", borderRadius: 8,
-    padding: "18px 16px", marginBottom: 20,
-    boxShadow: "0 1px 8px rgba(0,0,0,0.04)",
-  },
-  diagLabel: { fontSize: 9, letterSpacing: 3, textTransform: "uppercase", marginBottom: 8, display: "block" },
-  diagText: { fontSize: 13, color: "#444", lineHeight: 1.85 },
-  annotWrap: { marginBottom: 24 },
-  annotLabel: { fontSize: 9, letterSpacing: 3, color: "#bbb", textTransform: "uppercase", marginBottom: 12 },
-  annotRow: { display: "flex", gap: 12, marginBottom: 8, alignItems: "flex-start" },
-  annotNum: { fontSize: 10, minWidth: 20, paddingTop: 2 },
-  annotText: { fontSize: 12, color: "#777", fontStyle: "italic", lineHeight: 1.5 },
-  actions: { display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 },
-  shareBtn: {
-    border: "none", borderRadius: 6, padding: "14px",
-    fontSize: 13, fontWeight: 700, cursor: "pointer",
-    color: "#fff", fontFamily: "'DM Mono', monospace",
-    letterSpacing: 1, textTransform: "uppercase",
-  },
-  secondBtn: {
-    background: "transparent", border: "1.5px solid",
-    borderRadius: 6, padding: "13px", fontSize: 12,
-    cursor: "pointer", fontFamily: "'DM Mono', monospace", letterSpacing: 0.5,
-  },
-  footer: { fontSize: 10, color: "#ccc", textAlign: "center", letterSpacing: 0.3 },
-};
